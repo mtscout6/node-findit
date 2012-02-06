@@ -30,6 +30,7 @@ function find (base, options, cb) {
             .seq(fs.readdir, dir, Seq)
             .flatten()
             .seqEach(function (file) {
+              debugger;
                 var p = dir + '/' + file;
                 fs.lstat(p, this.into(p));
             })
@@ -38,10 +39,11 @@ function find (base, options, cb) {
             })
             .flatten()
             .seqEach(function (file) {
+              debugger;
                 var stat = this.vars[file];
                 if (cb) cb(file, stat);
                 
-                if (inodeSeen(stat.ino)) {
+                if (inodeSeen(file)) {
                     // already seen this inode, probably a recursive symlink
                     this(null);
                 }
@@ -113,7 +115,7 @@ exports.findSync = function findSync(dir, options, callback) {
     var fileQueue = [];
     var processFile = function processFile(file) {
         var stat = fs.lstatSync(file);
-        if (inodeSeen(stat.ino)) {
+        if (inodeSeen(file)) {
             return;
         }
         files.push(file);
